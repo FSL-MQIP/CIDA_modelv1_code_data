@@ -20,13 +20,13 @@ set.seed(1)
 
 #Load in data
 
-strain_param <- read.csv("model_inputs/primary_model_parameters_strain_averaged_2023_04_28.csv", header = TRUE)
+strain_param <- read.csv("model_inputs/primary_model_parameters_strain_averaged.csv", header = TRUE)
 
-mumax_secon <- read.csv("model_inputs/secondary_model_mumax_strain_averaged_2023_04_28.csv", header = TRUE)
+mumax_secon <- read.csv("model_inputs/secondary_model_mumax_strain_averaged.csv", header = TRUE)
 
-st_frequency <- read.csv("model_inputs/st_frequency_2023_06_02.csv", header = TRUE)
+st_frequency <- read.csv("model_inputs/st_frequency.csv", header = TRUE)
 
-initial_count <- read.csv("model_inputs/initial_distribution_2023_03_10.csv", header = TRUE)
+initial_count <- read.csv("model_inputs/initial_distribution.csv", header = TRUE)
 
 #Change strain parameters to lowercase 
 strain_param$isolate <- tolower(strain_param$isolate)

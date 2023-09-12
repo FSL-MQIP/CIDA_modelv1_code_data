@@ -1,5 +1,5 @@
 ##  ----------------------------Title-------------------------------------------
-#   Fitting models to the strain growth data, with data from all three replicates 
+#   Fitting the Ratkowsky square root model to the strain growth data (averaged growth parameters) 
 
 ##  --------------------------Description---------------------------------------
 #   Project: CIDA Spinach 
@@ -10,11 +10,9 @@
 #   Loading packages
 library(tidyverse); library(dplyr); 
 
-#library(weathermetrics) #Keep weathermetrics for work in Kelvin
-
 ##  --------------------------Data----------------------------------------------
 #Read in data 
-primary_param <- read.csv("outputs/parameters/primary_model_parameters_strain_averaged_2023_04_28.csv", header = TRUE)
+primary_param <- read.csv("outputs/parameters/primary_model_parameters_strain_averaged.csv", header = TRUE)
 
 ## ------------------Defining Secondary Model-----------------------------------
 
@@ -107,30 +105,13 @@ b184_mod_mu <- lm(sqrt_mu ~ temp, data = b184)
 secondary_param[6, 2] <- b184_mod_mu$coefficients[2]
 secondary_param[6, 3] <- (-b184_mod_mu$coefficients[1])/b184_mod_mu$coefficients[2]
 
-
-## ------------------------Predicting mu at new temperatures--------------------
-isolates <- rep(secondary_param$isolate, each = 11)
-temperature <- rep(3:13, times = 6)
-predicted_mu <- vector(mode = "logical", length = length(isolates))
-
-pred_new_mu <- bind_cols(isolates, temperature, predicted_mu)
-colnames(pred_new_mu) <- c("isolate", "temp", "predicted_mu")
-#pred_new_mu$temp <- weathermetrics::celsius.to.kelvin(pred_new_mu$temp, 2)
-
-for(i in 1:nrow(pred_new_mu)){
-  row_index <- which(secondary_param$isolate == pred_new_mu$isolate[i])
-  pred_new_mu$predicted_mu[i] <- ratkowsky(pred_new_mu$temp[i], secondary_param$b_mu[row_index], secondary_param$temp_min_mu[row_index])
-}
-
 ## -------------------------------Push data back onto server--------------------
 # Save data to R Project folder 
 
 #Push the data back to the R project 
-date <- Sys.Date()
-date <- gsub("-", "_", date)
 
 #Parameters
-#write.csv(secondary_param, paste("outputs/parameters/", "secondary_model_mumax_strain_averaged_", date, ".csv", sep = ""), row.names = FALSE)
+#write.csv(secondary_param, "outputs/parameters/secondary_model_mumax_strain_averaged.csv", row.names = FALSE)
 
 # End of saving data into R Project folder 
 

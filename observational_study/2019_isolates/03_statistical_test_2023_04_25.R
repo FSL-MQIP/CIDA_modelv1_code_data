@@ -4,7 +4,7 @@
 
 ##--------------------------------Description-----------------------------------
 
-#Starting with a chi-sqaured test. If the assumptions for this test are not met, will use a Fisher's exact test
+#Starting with a chi-squared test. If the assumptions for this test are not met, will use a Fisher's exact test
 
 ##--------------------------------Packages--------------------------------------
 

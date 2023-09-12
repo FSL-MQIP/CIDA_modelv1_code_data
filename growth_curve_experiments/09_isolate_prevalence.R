@@ -9,7 +9,7 @@ library(dplyr)
 library(reshape2)
 
 ##----------------------------Data----------------------------------------------
-data <- read.csv("data/raw/2023_06_02_distance_matrix.csv", header = T, check.names = F) 
+data <- read.csv("data/raw/distance_matrix.csv", header = T, check.names = F) 
 
 ##----------------------------Data Wrangling------------------------------------
 colnames(data)[1] <- "isolates"
@@ -40,6 +40,6 @@ data_5 <- data_4 %>%
 date <- Sys.Date()
 date <- gsub("-", "_", date)
 
-write.csv(data_5, paste("outputs/parameters/st_frequency_", date, ".csv", sep = ""), row.names = FALSE)
+write.csv(data_5, "outputs/parameters/st_frequency.csv", row.names = FALSE)
 
 

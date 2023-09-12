@@ -12,9 +12,9 @@ library(tidyverse); library(dplyr); library(ggplot2); library(RColorBrewer); lib
 
 ## ----------------------Reading in Data----------------------------------------
 
-apc_strain_data <- read.csv("data/wrangled/2023_04_28_apc_strain_averaged_wrangled_03.csv", header = TRUE)
-strain_param <- read.csv("outputs/parameters/primary_model_parameters_strain_averaged_2023_04_28.csv", header = TRUE)
-apc_param <- read.csv("outputs/parameters/primary_model_parameters_apc_averaged_2023_04_28.csv", header = TRUE)
+apc_strain_data <- read.csv("data/wrangled/apc_strain_averaged_wrangled_03.csv", header = TRUE)
+strain_param <- read.csv("outputs/parameters/primary_model_parameters_strain_averaged.csv", header = TRUE)
+apc_param <- read.csv("outputs/parameters/primary_model_parameters_apc_averaged.csv", header = TRUE)
 
 ## ------------------Defining Primary Models------------------------------------
 # Defining the primary growth functions. The Baranyi (with and without lag), Buchanan (with and without lag), and Gompertz model are found in the nlsMicrobio package. 
@@ -211,7 +211,6 @@ l8_pred <- apc_pred %>%
 
 ## ----------------------Plotting-----------------------------------------------
 #Plot data; Save plots in R Project folder
-#Strain
 
 strain_p1_6 <- ggplot(data = b116_6_6, aes(x = day, y = log_average_wrangled_conc)) + 
   geom_point(aes(shape = biorep)) + 
@@ -315,7 +314,7 @@ strain_plots_6c <- ggarrange(strain_p1_6 + rremove("ylab") + rremove("xlab"),
                              strain_p5_6 + rremove("ylab") + rremove("xlab"),
                              strain_p6_6 + rremove("ylab") + rremove("xlab"), ncol = 3, nrow = 2, common.legend = TRUE, legend = "right")
 
-#pdf(paste("output/plot/6C_strain_primary_model_plot_", date, ".pdf", sep = ""))
+#pdf("outputs/plots/6C_strain_primary_model_plot.pdf")
 
 annotate_figure(strain_plots_6c, left = textGrob(expression("Concentration, log"[10]*"CFU/g"), rot = 90, vjust = 1, gp = gpar(cex = 1)),
                 bottom = textGrob("Day", gp = gpar(cex = 1)))
@@ -329,7 +328,7 @@ strain_plots_10c <- ggarrange(strain_p1_10 + rremove("ylab") + rremove("xlab"),
                               strain_p5_10 + rremove("ylab") + rremove("xlab"),
                               strain_p6_10 + rremove("ylab") + rremove("xlab"), ncol = 3, nrow = 2)
 
-#pdf(paste("output/plot/10_strain_primary_model_plot_", date, ".pdf", sep = ""))
+#pdf("outputs/plots/10_strain_primary_model_plot.pdf")
 
 annotate_figure(strain_plots_10c, left = textGrob(expression("Concentration, log"[10]*"CFU/g"), rot = 90, vjust = 1, gp = gpar(cex = 1)),
                 bottom = textGrob("Day", gp = gpar(cex = 1)))
@@ -421,7 +420,7 @@ apc_plots <- ggarrange(apc_p1_6 + rremove("ylab") + rremove("xlab"),
                        apc_p7_10 + rremove("ylab") + rremove("xlab"), 
                        apc_p8_10 + rremove("ylab") + rremove("xlab"), ncol = 4, nrow = 2, common.legend = TRUE, legend = "right")
 
-#pdf(paste("output/plot/apc_primary_model_plot_", date, ".pdf", sep = ""))
+#pdf("outputs/plots/apc_primary_model_plot.pdf")
 
 annotate_figure(apc_plots, left = textGrob(expression("Concentration, log"[10]*"CFU/g"), rot = 90, vjust = 1, gp = gpar(cex = 1)),
                 bottom = textGrob("Day", gp = gpar(cex = 1)))

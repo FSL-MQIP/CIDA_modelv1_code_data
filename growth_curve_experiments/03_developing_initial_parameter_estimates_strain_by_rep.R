@@ -1,10 +1,10 @@
 ##  ----------------------------Title-------------------------------------------
-#   Getting initial parameter estimates for strain growth data, with data from all three replicates 
+#   Getting initial parameter estimates for strain growth data
 
 ##  --------------------------Description---------------------------------------
 #   Project: CIDA Spinach 
 
-#   Script description: Initial parameter estimates, for primary growth models, are assessed for all six isolates 
+#   Script description: Initial parameter estimates, for primary growth models, are assessed for all replicates of all  isolates 
 
 ##  --------------------------Packages------------------------------------------
 #   Loading packages
@@ -12,12 +12,12 @@ library(tidyverse); library(dplyr); library(minpack.lm)
 
 ##  --------------------------Data----------------------------------------------
 #Read in data 
-apc_strain_data <- read.csv("data/wrangled/2023_04_28_apc_strain_averaged_wrangled_03.csv", header = TRUE)
+apc_strain_data <- read.csv("data/wrangled/apc_strain_averaged_wrangled_03.csv", header = TRUE)
 
 ## ---------------------------Data Wrangling------------------------------------
 #Data is split into strain growth data and APC growth data 
 strain_data <- apc_strain_data %>%
-  dplyr::filter(media == "BHI")
+  dplyr::filter(media == "BHIrif")
 
 #Subset strain data by isolate and rep
 b116_6_1 <- filter(strain_data, isolate ==  c("S12-0116")) %>%
@@ -172,13 +172,14 @@ param_estimates[3, 2] <- b116_6_3 %>%
   summarise(ave = mean(log_average_wrangled_conc)) %>%
   summarise(min(ave)) 
 
-#lag
+#lag (Replaced this lag estimate with 9, based on visual assessment of a figure of count by day for this isolate/replicate)
 for(i in 1:nrow(b116_6_3)){
   if((b116_6_3$log_average_wrangled_conc[i] - b116_6_3$log_average_wrangled_conc[1])/b116_6_3$log_average_wrangled_conc[1] > 0.15){
     param_estimates[3,3] <- b116_6_3$day[i]
     break
   }
 }
+param_estimates[3,3] <- "9"
 
 #mu 
 for(i in 1:nrow(b116_6_3)){
@@ -563,13 +564,15 @@ param_estimates[13,2] <- b180_6_1 %>%
   summarise(ave = mean(log_average_wrangled_conc)) %>%
   summarise(min(ave))
 
-#lag 
+#lag (replaced lag with 9, based on visual assessment)
 for(i in 1:nrow(b180_6_1)){
   if((b180_6_1$log_average_wrangled_conc[i] - b180_6_1$log_average_wrangled_conc[1])/b180_6_1$log_average_wrangled_conc[1] > 0.15){
     param_estimates[13,3] <- print(b180_6_1$day[i])
     break
   }
 }
+
+param_estimates[13,3] <- "9"
 
 #mu 
 for(i in 1:nrow(b180_6_1)){
@@ -601,13 +604,15 @@ param_estimates[14,2] <- b180_6_2 %>%
   summarise(ave = mean(log_average_wrangled_conc)) %>%
   summarise(min(ave))
 
-#lag
+#lag (changed lag to 12, based on visual assessment of a figure of count by day for this isolate/replicate)
 for(i in 1:nrow(b180_6_2)){
   if((b180_6_2$log_average_wrangled_conc[i] - b180_6_2$log_average_wrangled_conc[1])/b180_6_2$log_average_wrangled_conc[1] > 0.15){
     param_estimates[14,3] <- print(b180_6_2$day[i])
     break
   }
 }
+
+param_estimates[14,3] <- "12"
 
 #mu 
 for(i in 1:nrow(b180_6_2)){
@@ -639,13 +644,15 @@ param_estimates[15,2] <- b180_6_3 %>%
   summarise(ave = mean(log_average_wrangled_conc)) %>%
   summarise(min(ave))
 
-#lag 
+#lag (replaced lag with 12, based on visual assessment)
 for(i in 1:nrow(b180_6_3)){
   if((b180_6_3$log_average_wrangled_conc[i] - b180_6_3$log_average_wrangled_conc[1])/b180_6_3$log_average_wrangled_conc[1] > 0.15){
     param_estimates[15,3] <- print(b180_6_3$day[i])
     break
   }
 }
+
+param_estimates[15,3] <- "12"
 
 #mu 
 for(i in 1:nrow(b180_6_3)){
@@ -679,13 +686,15 @@ param_estimates[16,2] <- b184_6_1 %>%
   summarise(ave = mean(log_average_wrangled_conc)) %>%
   summarise(min(ave))
 
-#lag
+#lag (changed to 12, based on visual assessment)
 for(i in 1:nrow(b184_6_1)){
   if((b184_6_1$log_average_wrangled_conc[i] - b184_6_1$log_average_wrangled_conc[1])/b184_6_1$log_average_wrangled_conc[1] > 0.15){
     param_estimates[16,3] <- print(b184_6_1$day[i])
     break
   }
 }
+
+param_estimates[16,3] <- "12"
 
 #mu 
 for(i in 1:nrow(b184_6_1)){
@@ -755,13 +764,15 @@ param_estimates[18,2] <- b184_6_3 %>%
   summarise(ave = mean(log_average_wrangled_conc)) %>%
   summarise(min(ave))
 
-#lag
+#lag (changed to 6, based on visual assessment)
 for(i in 1:nrow(b184_6_3)){
   if((b184_6_3$log_average_wrangled_conc[i] - b184_6_3$log_average_wrangled_conc[1])/b184_6_3$log_average_wrangled_conc[1] > 0.15){
     param_estimates[18,3] <- print(b184_6_3$day[i])
     break
   }
 }
+
+param_estimates[18,3] <- 6
 
 #mu 
 for(i in 1:nrow(b184_6_3)){
@@ -833,13 +844,15 @@ param_estimates[20,2] <- b132_10 %>%
   summarise(ave = mean(log_average_wrangled_conc)) %>%
   summarise(min(ave))
 
-#lag
+#lag (chnaged to 6, based on visual assessment)
 for(i in 1:nrow(b132_10)){
   if((b132_10$log_average_wrangled_conc[i] - b132_10$log_average_wrangled_conc[1])/b132_10$log_average_wrangled_conc[1] > 0.15){
     param_estimates[20,3] <- print(b132_10$day[i])
     break
   }
 }
+
+param_estimates[20,3]  <- 6
 
 #mu 
 for(i in 1:nrow(b132_10)){
@@ -909,15 +922,13 @@ param_estimates[22,2] <- b166_10 %>%
   summarise(ave = mean(log_average_wrangled_conc)) %>%
   summarise(min(ave))
 
-#lag (changed to 1, based on visual assessment of a figure of counts by day for this isolate/replicate)
+#lag 
 for(i in 1:nrow(b166_10)){
   if((b166_10$log_average_wrangled_conc[i] - b166_10$log_average_wrangled_conc[1])/b166_10$log_average_wrangled_conc[1] > 0.15){
     param_estimates[22,3] <- print(b166_10$day[i])
     break
   }
 }
-
-param_estimates[22,3] <- "1"
 
 #mu 
 for(i in 1:nrow(b166_10)){
@@ -949,15 +960,13 @@ param_estimates[23,2] <- b180_10 %>%
   summarise(ave = mean(log_average_wrangled_conc)) %>%
   summarise(min(ave))
 
-#lag (replaced with 2, based on visual assessment)
+#lag 
 for(i in 1:nrow(b180_10)){
   if((b180_10$log_average_wrangled_conc[i] - b180_10$log_average_wrangled_conc[1])/b180_10$log_average_wrangled_conc[1] > 0.15){
     param_estimates[23,3] <- print(b180_10$day[i])
     break
   }
 }
-
-param_estimates[23,3] <- 2
 
 #mu 
 for(i in 1:nrow(b180_10)){
@@ -1025,8 +1034,6 @@ param_estimates[24,5] <- b184_10 %>%
 ##------------------------Exporting Initial Model Parameters--------------------
 
 #Push the data back to the R project 
-date <- Sys.Date()
-date <- gsub("-", "_", date)
 
-#write.csv(param_estimates, paste("outputs/parameters/initial_parameter_estimates_apc_by_rep", date, ".csv", sep = ""), row.names = FALSE)
+#write.csv(param_estimates, "outputs/parameters/initial_parameter_estimates_strain_by_rep.csv", row.names = FALSE)
 

@@ -1,10 +1,11 @@
-  ## -------------------------------------------------------------------------
-# Wrangling Raw Data for Growth Curve Experiments Conducted at 6C
-
+## -------------------------------------------------------------------------
+# Wrangling Raw Data for Growth Curve Experiment on Baby Spinach 
 ## -------------------------------------------------------------------------
 # Project: CIDA Spinach 
 
-# Script description: combining the raw data to a single data frame. Ensuring that all variables are in of the appropriate type. Wrangling data as necessary (e.g., log transformation). 
+# Script description: combining the raw data to a single data frame. 
+#Ensuring that all variables are in of the appropriate type. 
+#Wrangling data as necessary (e.g., log transformation). 
 
 ## -------------------------------------------------------------------------
 #   Loading packages
@@ -12,14 +13,14 @@ library(tidyverse); library(dplyr); library(lubridate)
 
 ## -------------------------------------------------------------------------
 #   Reading in raw data
-b2 <- read.csv("data/raw/batch2_consolidated_data_2022_1_8.csv", header = TRUE, stringsAsFactors = TRUE)
-b3 <- read.csv("data/raw/batch3_consolidated_data_2022_1_8.csv", header = TRUE, stringsAsFactors = TRUE)
-b4 <- read.csv("data/raw/batch4_consolidated_data_2022_1_8.csv", header = TRUE, stringsAsFactors = TRUE)
-b5 <- read.csv("data/raw/batch5_consolidated_data_2022_1_8.csv", header = TRUE, stringsAsFactors = TRUE)
-b6 <- read.csv("data/raw/batch6_consolidated_data_2022_1_8.csv", header = TRUE, stringsAsFactors = TRUE)
-b7 <- read.csv("data/raw/batch7_consolidated_data_2022_1_8.csv", header = TRUE, stringsAsFactors = TRUE)
-b8 <- read.csv("data/raw/batch8_consolidated_data_2022_05_17.csv", header = TRUE, stringsAsFactors = TRUE)
-b9 <- read.csv("data/raw/batch9_consolidated_data_2022_05_17.csv", header = TRUE, stringsAsFactors = TRUE)
+b2 <- read.csv("data/raw/batch2_consolidated_data.csv", header = TRUE, stringsAsFactors = TRUE)
+b3 <- read.csv("data/raw/batch3_consolidated_data.csv", header = TRUE, stringsAsFactors = TRUE)
+b4 <- read.csv("data/raw/batch4_consolidated_data.csv", header = TRUE, stringsAsFactors = TRUE)
+b5 <- read.csv("data/raw/batch5_consolidated_data.csv", header = TRUE, stringsAsFactors = TRUE)
+b6 <- read.csv("data/raw/batch6_consolidated_data.csv", header = TRUE, stringsAsFactors = TRUE)
+b7 <- read.csv("data/raw/batch7_consolidated_data.csv", header = TRUE, stringsAsFactors = TRUE)
+b8 <- read.csv("data/raw/batch8_consolidated_data.csv", header = TRUE, stringsAsFactors = TRUE)
+b9 <- read.csv("data/raw/batch9_consolidated_data.csv", header = TRUE, stringsAsFactors = TRUE)
 
 ## -------------------------------------------------------------------------
 # Merging data into a single dataframe; Formatting variables;
@@ -89,24 +90,43 @@ cbind(
 
 #End of separating data and additional formatting 
 
+apc_strain_data[, c("batch", "temperature", "isolate", "biorep", "media", "time")] <- 
+  lapply(apc_strain_data[, c("batch", "temperature", "isolate", "biorep", "media", "time")] , as.factor)
+
+#Calculating the average concentration for each day of testing and media. Removing columns that would not be required during subsequent portions of the analysis
+apc_strain_data_wrangled_ave <- apc_strain_data %>%
+  group_by(batch, isolate, day, time, media) %>%
+  mutate(average_wrangled_conc = mean(concentration_from_sphereflash)) %>%
+  distinct(batch, isolate, day, time, media, .keep_all = TRUE) %>%
+  mutate(log_average_wrangled_conc= log10(average_wrangled_conc)) %>%
+  ungroup()
+
+#Identifying which observations are in below the detection limit 
+below_det_limit <- apc_strain_data_wrangled_ave[apc_strain_data_wrangled_ave$average_wrangled_conc == 0, ]
+
+#Replacing the concentration of samples that were below the detection limit with 
+#25% of the detection limit (detection limit = dilution factor*volume plated (50uL))
+apc_strain_data_wrangled_ave$log_average_wrangled_conc <-
+  ifelse(apc_strain_data_wrangled_ave$average_wrangled_conc == 0,
+         log10(0.25*apc_strain_data_wrangled_ave$dilution_factor/0.05),
+         apc_strain_data_wrangled_ave$log_average_wrangled_conc)
+
+#Removing unecessary columns from the apc_strain_data dataframe
+apc_strain_data_wrangled_ave <- apc_strain_data_wrangled_ave %>%
+  select(-c("concentration_from_sphereflash", "counted_colonies", "dilution", "dilution_factor", "platingrep"))
+
+#Identify which day the max count is reached for each isolate. Counts will be marked as death_phase or not, based on this data 
+max_by_isolate_and_rep <- apc_strain_data_wrangled_ave %>%
+  group_by(batch, isolate, media, time) %>%
+  arrange(desc(log_average_wrangled_conc)) %>%
+  slice(1)
+
 ## -------------------------------------------------------------------------
-# Save wrangled data to R Project folder 
+#Save wrangled data to R Project folder 
 
 #Push the wrangled data back to the R project 
-date <- Sys.Date()
-date <- gsub("-", "_", date)
 
-write.csv(apc_strain_data, paste("data/wrangled/", date, "_apc_strain_data_wrangled_01.csv", sep = ""), row.names = FALSE)
-write.csv(control_data, paste("data/wrangled/", date, "_control_data_wrangled_01.csv", sep = ""), row.names = FALSE)
-
+write.csv(apc_strain_data_wrangled_ave, "data/wrangled/apc_strain_averaged_wrangled_01.csv", row.names = FALSE)
+write.csv(max_by_isolate_and_rep, "data/wrangled/max_counts_for_dieoff_assessment_wrangled_01.csv", row.names = FALSE)
 # End of saving data into R Project folder 
-
-## -------------------------------------------------------------------------
-# Data frame Guide:
-
-#   b2 - b9: Data collected from each individual experiment. Each batch consists of three independent/biological replicates. 
-#   combined_data <- Data from b2 - b9 merged into a single data frame
-
-
-
 
