@@ -20,13 +20,13 @@ set.seed(1)
 
 #Load in data
 
-strain_param <- read.csv("model_inputs/primary_model_parameters_strain_averaged_2023_04_28.csv", header = TRUE)
+strain_param <- read.csv("model_inputs/primary_model_parameters_strain_averaged.csv", header = TRUE)
 
-mumax_secon <- read.csv("model_inputs/secondary_model_mumax_strain_averaged_2023_04_28.csv", header = TRUE)
+mumax_secon <- read.csv("model_inputs/secondary_model_mumax_strain_averaged.csv", header = TRUE)
 
-st_frequency <- read.csv("model_inputs/st_frequency_2023_06_02.csv", header = TRUE)
+st_frequency <- read.csv("model_inputs/st_frequency.csv", header = TRUE)
 
-initial_count <- read.csv("model_inputs/initial_distribution_2023_03_10.csv", header = TRUE)
+initial_count <- read.csv("model_inputs/initial_distribution.csv", header = TRUE)
 
 #Change strain parameters to lowercase 
 strain_param$isolate <- tolower(strain_param$isolate)
@@ -40,11 +40,11 @@ st_frequency$growth_isolates <- tolower(st_frequency$growth_isolates)
 st_frequency <- st_frequency %>%
   dplyr::select(growth_isolates, frequency)
 
-s12_132 <- st_frequency$frequency[st_frequency$growth_isolates == "s12-0132"]
-mod_s12_132 <- s12_132*0.4
-mod_sum <- sum(st_frequency$frequency[st_frequency$growth_isolates != "s12-0132"])
-st_frequency$mod_freq <- st_frequency$frequency + (st_frequency$frequency/mod_sum)*(s12_132 - mod_s12_132)
-st_frequency$mod_freq[st_frequency$growth_isolates == "s12-0132"] <- mod_s12_132
+s12_166 <- st_frequency$frequency[st_frequency$growth_isolates == "s12-0166"]
+mod_s12_166 <- s12_166*0.4
+mod_sum <- sum(st_frequency$frequency[st_frequency$growth_isolates != "s12-0166"])
+st_frequency$mod_freq <- st_frequency$frequency + (st_frequency$frequency/mod_sum)*(s12_166 - mod_s12_166)
+st_frequency$mod_freq[st_frequency$growth_isolates == "s12-0166"] <- mod_s12_166
 sum(st_frequency$mod_freq)
 
 #Initial Count Distribution: Log transforming initial count, and fitting a uniform distribution to the data
@@ -259,7 +259,7 @@ sa_1 <- shelf_life_sim %>%
   group_by(day) %>%
   summarize(prop_spoiled = sum(total_count > 8.0)/n_packages) %>%
   mutate(adj = 0.4) %>%
-  mutate(param = "highest_nmax_s12_0132")
+  mutate(param = "highest_nmax_s12_0166")
 
 sa_2 <- shelf_life_sim %>%
   group_by(day, package) %>%
@@ -271,14 +271,12 @@ sa_2 <- shelf_life_sim %>%
             mode = mode(rounded_total_count),
             median = median(total_count)) %>%
   mutate(adj = 0.4) %>%
-  mutate(param = "highest_nmax_s12_0132")
+  mutate(param = "highest_nmax_s12_0166")
 
 ## --------------------------------Export---------------------------------------
 
-date <- Sys.Date()
-date <- gsub("-", "_", date)
-file_name_1 <- paste0("sensitivity_analysis/strain_type/output/sa_strain_type_threshold_", date,".csv")
-file_name_2 <- paste0("sensitivity_analysis/strain_type/output/sa_strain_type_count_", date,".csv")
+file_name_1 <- "sensitivity_analysis/strain_type/output/sa_strain_type_threshold.csv"
+file_name_2 <- "sensitivity_analysis/strain_type/output/sa_strain_type_count.csv"
 
 write.table(sa_1, file_name_1, sep = ",", col.names = !file.exists(file_name_1), append = T, row.names = FALSE)
 write.table(sa_2, file_name_2, sep = ",", col.names = !file.exists(file_name_2), append = T, row.names = FALSE)

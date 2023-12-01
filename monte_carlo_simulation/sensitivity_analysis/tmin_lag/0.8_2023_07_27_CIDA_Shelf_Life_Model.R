@@ -20,13 +20,13 @@ set.seed(1)
 
 #Load in data
 
-strain_param <- read.csv("model_inputs/primary_model_parameters_strain_averaged_2023_04_28.csv", header = TRUE)
+strain_param <- read.csv("model_inputs/primary_model_parameters_strain_averaged.csv", header = TRUE)
 
-mumax_secon <- read.csv("model_inputs/secondary_model_mumax_strain_averaged_2023_04_28.csv", header = TRUE)
+mumax_secon <- read.csv("model_inputs/secondary_model_mumax_strain_averaged.csv", header = TRUE)
 
-st_frequency <- read.csv("model_inputs/st_frequency_2023_06_02.csv", header = TRUE)
+st_frequency <- read.csv("model_inputs/st_frequency.csv", header = TRUE)
 
-initial_count <- read.csv("model_inputs/initial_distribution_2023_03_10.csv", header = TRUE)
+initial_count <- read.csv("model_inputs/initial_distribution.csv", header = TRUE)
 
 #Change strain parameters to lowercase 
 strain_param$isolate <- tolower(strain_param$isolate)
@@ -113,7 +113,7 @@ NewMu <- function(temp, b, temp_min, isolate){
 }
 
 lag_tmin_pre <- mumax_secon$temp_min_mu[mumax_secon$isolate == "s12-0116"]
-lag_tmin <- lag_tmin_pre - 20*(lag_tmin_pre/100)
+lag_tmin <- lag_tmin_pre + 20*(lag_tmin_pre/100)
 
 NewLag <- function(temp, lag) {
   ans <- lag*((6 - lag_tmin)/(temp - lag_tmin))^2
@@ -266,10 +266,8 @@ sa_2 <- shelf_life_sim %>%
 
 ## --------------------------------Export---------------------------------------
 
-date <- Sys.Date()
-date <- gsub("-", "_", date)
-file_name_1 <- paste0("sensitivity_analysis/tmin_lag/output/sa_lag_tmin_threshold_", date,".csv")
-file_name_2 <- paste0("sensitivity_analysis/tmin_lag/output/sa_lag_tmin_count_", date,".csv")
+file_name_1 <- "sensitivity_analysis/tmin_lag/output/sa_lag_tmin_threshold.csv"
+file_name_2 <- "sensitivity_analysis/tmin_lag/output/sa_lag_tmin_count.csv"
 
 write.table(sa_1, file_name_1, sep = ",", col.names = !file.exists(file_name_1), append = T, row.names = FALSE)
 write.table(sa_2, file_name_2, sep = ",", col.names = !file.exists(file_name_2), append = T, row.names = FALSE)

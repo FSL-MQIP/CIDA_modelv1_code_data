@@ -51,12 +51,14 @@ change_summary <- net_growth_df %>%
   group_by(Isolate_ID, Duration) %>%
   summarize(mean = round(mean(value), 2), sd = round(sd(value), 2))
   
-
 ```
 
 
 ```{r}
 #FSL M9-0536 & FSL S12-0116
+
+finaldf$variable <- as.factor(finaldf$variable)
+finaldf$Isolate_ID <- as.factor(finaldf$Isolate_ID)
 
 df_1 <- subset(finaldf, isolate_ID %in% c(wt[1], rif[1]))
 mod_1 <- lmer(counts_log ~ variable * Isolate_ID + (1|Plate_Id), data = df_1)
@@ -86,7 +88,8 @@ print(summary(con_3))
 #FSL M9-0610 & FSL S12-0150
 
 df_4 <- subset(finaldf, isolate_ID %in% c(wt[4], rif[4]))
-mod_4 <- lmer(counts_log ~ variable * Isolate_ID + (1|Plate_Id), data = df_4)
+mod_4 <- lmer(counts_log ~ variable * Isolate_ID + (1|Plate_Id), data = df_4)  #Boundary is singular. Will use "lm"
+mod_4 <- lm(counts_log ~ variable * Isolate_ID, data = df_4) 
 mod.emm_4 <- emmeans(mod_4, ~ Isolate_ID + variable)
 con_4 <- contrast(mod.emm_4, method = list("first_netgrowth" = c(-1, 1, 1, -1, 0, 0), "second_netgrowth" = c(0, 0, -1, 1, 1, -1)))
 print(paste("Comparison of net growth for", wt[4], "(Parent) &", rif[4], "(Rif-R)", sep = " "))

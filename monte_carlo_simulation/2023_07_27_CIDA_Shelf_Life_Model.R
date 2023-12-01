@@ -241,11 +241,65 @@ counts_summary_by_package <- shelf_life_sim %>%
   group_by(day, package) %>%
   summarize(total_count = log10(sum(10^(count))))
 
+package_summary <- shelf_life_sim %>%
+  group_by(day, package) %>%
+  mutate(total_count = log10(sum(10^(count))),
+         mean_mumax = mean(mumax),
+         mean_lag = mean(lag)) %>%
+  dplyr::select(-c("count", "nmax", "mumax", "initial_count", 
+                   "isolate", "lag")) %>%
+  ungroup() %>%
+  group_by(day, package) %>%
+  slice(1) 
+
+package_isolates <- data.frame(1:n_packages, 0, 0, 0, 0, 0, 0)
+
+colnames(package_isolates) <- c("package", "s12-0116", "s12-0132",
+                                "s12-0141", "s12-0166", "s12-0180",
+                                "s12-0184")
+
+for(i in 1:nrow(package_isolates)){
+  index <- which(package_isolates$package[i] == packages_sim_exp$package)
+  isolates <- packages_sim_exp$isolate[index]
+  if("s12-0116" %in% isolates){
+    package_isolates$`s12-0116`[i] <- 1
+  } else {
+    package_isolates$`s12-0116`[i] <- 0
+  }
+  if("s12-0132" %in% isolates){
+    package_isolates$`s12-0132`[i] <- 1
+  } else {
+    package_isolates$`s12-0132`[i] <- 0
+  }
+  if("s12-0141" %in% isolates){
+    package_isolates$`s12-0141`[i] <- 1
+  } else {
+    package_isolates$`s12-0141`[i] <- 0
+  }
+  if("s12-0166" %in% isolates){
+    package_isolates$`s12-0166`[i] <- 1
+  } else {
+    package_isolates$`s12-0166`[i] <- 0
+  }
+  if("s12-0180" %in% isolates){
+    package_isolates$`s12-0180`[i] <- 1
+  } else {
+    package_isolates$`s12-0180`[i] <- 0
+  }
+  if("s12-0184" %in% isolates){
+    package_isolates$`s12-0184`[i] <- 1
+  } else {
+    package_isolates$`s12-0184`[i] <- 0
+  }
+}
+
+packages_summary_export <- merge(package_summary,
+                                 package_isolates, by.x = "package",
+                                 by.y = "package")
+  
 ## --------------------Exporting data-------------------------------------------
 
-date <- Sys.Date()
-date <- gsub("-", "_", date)
-
-write.csv(count_summary_by_day, file = paste0("outputs/count_by_day", date, ".csv"), row.names = FALSE)
-write.csv(percent_packages_nmax, file = paste0("outputs/percentage_of_packages_at_nmax", date, ".csv"), row.names = FALSE)
-write.csv(counts_summary_by_package, file = paste0("outputs/total_count_by_package", date, ".csv"), row.names = FALSE)
+write.csv(count_summary_by_day, file = paste0("outputs/count_by_day.csv"), row.names = FALSE)
+write.csv(percent_packages_nmax, file = paste0("outputs/percentage_of_packages_at_nmax.csv"), row.names = FALSE)
+write.csv(counts_summary_by_package, file = paste0("outputs/total_count_by_package.csv"), row.names = FALSE)
+write.csv(packages_summary_export, file = paste0("outputs/packages_summary.csv"), row.names = FALSE)
